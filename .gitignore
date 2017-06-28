@@ -137,3 +137,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/foster-contracts.iml
+.idea/inspectionProfiles/profiles_settings.xml
+client_secret.json
