@@ -143,3 +143,5 @@ $RECYCLE.BIN/
 .idea/foster-contracts.iml
 .idea/inspectionProfiles/profiles_settings.xml
 client_secret.json
+.idea/vcs.xml
+drive_files.txt

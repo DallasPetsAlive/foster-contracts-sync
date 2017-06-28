@@ -7,6 +7,8 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
+from datetime import date, timedelta
+
 try:
     import argparse
     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
@@ -49,7 +51,7 @@ def get_credentials():
     return credentials
 
 
-def main():
+def get_drive_files():
     """Shows basic usage of the Google Drive API.
 
     Creates a Google Drive API service object and outputs the names and IDs
@@ -59,16 +61,24 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('drive', 'v3', http=http)
 
+    # get yesterday's date (actually day before yesterday)
+    yesterday = date.today() - timedelta(2)
+    yesterday_date = yesterday.strftime('%Y-%m-%dT00:00:00')
+
     results = service.files().list(
-        q="name contains 'Test'", supportsTeamDrives='true', includeTeamDriveItems='true', corpora='teamDrive',
+        q="modifiedTime >= '%s'" % yesterday_date, supportsTeamDrives='true', includeTeamDriveItems='true', corpora='teamDrive',
         teamDriveId='0AJBuyjEDVhtZUk9PVA', pageSize=30, fields="nextPageToken, files(id, name)").execute()
     items = results.get('files', [])
-    if not items:
-        print('No files found.')
-    else:
-        print('Files:')
-        for item in items:
-            print('{0} ({1})'.format(item['name'], item['id']))
+    with open('drive_files.txt', 'w') as drive_file:
+        if not items:
+            print('No files found.')
+            drive_file.write('0')
+        else:
+            print('Files:')
+            drive_file.write('%s\n' % len(items))
+            for item in items:
+                print('{0} ({1})'.format(item['name'], item['id']))
+                drive_file.write(item['name'] + '(' + item['id'] + ')\n')
 
 if __name__ == '__main__':
-    main()
+    get_drive_files()
